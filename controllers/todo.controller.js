@@ -45,4 +45,24 @@ const updateTodoById = async (req, res) => {
     });
 };
 
-module.exports = { newTodo, updateTodoById };
+// Delete a todo by ID
+const deleteTodoById = async (req, res) => {
+  const query = { _id: req?.params.id };
+
+  await Todo.deleteOne(query)
+    .then(() => {
+      return res.status(200).json({
+        success: true,
+        message: "Todo deleted successfully",
+      });
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        success: false,
+        message: "There was a server-side error",
+        error: err.message || err,
+      });
+    });
+};
+
+module.exports = { newTodo, updateTodoById, deleteTodoById };
