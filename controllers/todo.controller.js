@@ -19,6 +19,27 @@ const getAllTodos = async (req, res) => {
     });
 };
 
+// Get a todo by ID
+const getTodoById = async (req, res) => {
+  const query = { _id: req?.params.id };
+
+  await Todo.findOne(query)
+    .then((data) => {
+      return res.status(200).json({
+        success: true,
+        message: "Todos fetched successfully",
+        data,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        success: false,
+        message: "There was a server-side error",
+        error: err.message || err,
+      });
+    });
+};
+
 // Insert a new todo
 const newTodo = async (req, res) => {
   await new Todo(req.body)
@@ -84,4 +105,10 @@ const deleteTodoById = async (req, res) => {
     });
 };
 
-module.exports = { getAllTodos, newTodo, updateTodoById, deleteTodoById };
+module.exports = {
+  getAllTodos,
+  getTodoById,
+  newTodo,
+  updateTodoById,
+  deleteTodoById,
+};
