@@ -5,7 +5,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // Importing routes
-const totoRoutes = require("./routers/todo.router");
+const todoRoutes = require("./routers/todo.router");
 
 // Middleware
 app.use(express.json());
@@ -22,8 +22,12 @@ mongoose
     console.error("MongoDB connection error:", err);
   });
 
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+
 // Routes setup
-app.use("/api/todo", totoRoutes);
+app.use("/todo", todoRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
