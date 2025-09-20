@@ -1,5 +1,24 @@
 const Todo = require("../models/todo.model"); // Import the Todo model
 
+// Get all todos
+const getAllTodos = async (req, res) => {
+  await Todo.find()
+    .then((data) => {
+      return res.status(200).json({
+        success: true,
+        message: "Todos fetched successfully",
+        data,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        success: false,
+        message: "There was a server-side error",
+        error: err.message || err,
+      });
+    });
+};
+
 // Insert a new todo
 const newTodo = async (req, res) => {
   await new Todo(req.body)
@@ -65,4 +84,4 @@ const deleteTodoById = async (req, res) => {
     });
 };
 
-module.exports = { newTodo, updateTodoById, deleteTodoById };
+module.exports = { getAllTodos, newTodo, updateTodoById, deleteTodoById };

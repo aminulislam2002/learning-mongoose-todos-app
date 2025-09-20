@@ -5,9 +5,13 @@ const {
   newTodo,
   updateTodoById,
   deleteTodoById,
+  getAllTodos,
 } = require("../controllers/todo.controller");
 
 // Define routes for /todo
+
+// Get all todos
+router.get("/", getAllTodos);
 
 // Insert a new todo
 router.post("/", newTodo);
