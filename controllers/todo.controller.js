@@ -2,10 +2,9 @@ const Todo = require("../models/todo.model"); // Import the Todo model
 
 // Insert a new todo
 const newTodo = async (req, res) => {
-  const todoDocument = new Todo(req.body);
-  await todoDocument
+  await new Todo(req.body)
     .save()
-    .then((result) => {
+    .then(() => {
       return res.status(201).json({
         success: true,
         message: "New todo created successfully",
@@ -20,4 +19,30 @@ const newTodo = async (req, res) => {
     });
 };
 
-module.exports = { newTodo };
+// Update a todo by ID
+const updateTodoById = async (req, res) => {
+  const query = { _id: req?.params.id };
+
+  await Todo.updateOne(
+    query,
+    {
+      $set: req?.body,
+    },
+    { new: true, runValidators: true }
+  )
+    .then(() => {
+      return res.status(200).json({
+        success: true,
+        message: "Todo updated successfully",
+      });
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        success: false,
+        message: "There was a server-side error",
+        error: err.message || err,
+      });
+    });
+};
+
+module.exports = { newTodo, updateTodoById };

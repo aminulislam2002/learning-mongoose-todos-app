@@ -9,6 +9,7 @@ const todoRoutes = require("./routers/todo.router");
 
 // Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // For form-encoded bodies
 
 // Mongoose connection
 mongoose
