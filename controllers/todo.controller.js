@@ -1,108 +1,132 @@
+const mongoose = require("mongoose");
 const Todo = require("../models/todo.model"); // Import the Todo model
 
 // Get all todos
 const getAllTodos = async (req, res) => {
-  await Todo.find()
-    .then((data) => {
-      return res.status(200).json({
-        success: true,
-        message: "Todos fetched successfully",
-        data,
-      });
-    })
-    .catch((err) => {
-      return res.status(500).json({
-        success: false,
-        message: "There was a server-side error",
-        error: err.message || err,
-      });
+  try {
+    const data = await Todo.find();
+    return res.status(200).json({
+      success: true,
+      message: "Todos fetched successfully",
+      data,
     });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "There was a server-side error",
+      error: error.message || error,
+    });
+  }
 };
 
 // Get a todo by ID
 const getTodoById = async (req, res) => {
-  const query = { _id: req?.params.id };
+  const id = req?.params.id;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid id format" });
+  }
 
-  await Todo.findOne(query)
-    .then((data) => {
-      return res.status(200).json({
-        success: true,
-        message: "Todos fetched successfully",
-        data,
-      });
-    })
-    .catch((err) => {
-      return res.status(500).json({
-        success: false,
-        message: "There was a server-side error",
-        error: err.message || err,
-      });
+  try {
+    const query = { _id: id };
+    const data = await Todo.findOne(query);
+    return res.status(200).json({
+      success: true,
+      message: "Todos fetched successfully",
+      data,
     });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "There was a server-side error",
+      error: error.message || error,
+    });
+  }
 };
 
 // Insert a new todo
 const newTodo = async (req, res) => {
-  await new Todo(req.body)
-    .save()
-    .then(() => {
-      return res.status(201).json({
-        success: true,
-        message: "New todo created successfully",
-      });
-    })
-    .catch((err) => {
-      return res.status(500).json({
-        success: false,
-        message: "There was a server-side error",
-        error: err.message || err,
-      });
+  try {
+    const data = await new Todo(req.body).save();
+    return res.status(201).json({
+      success: true,
+      message: "New todo created successfully",
+      data,
     });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "There was a server-side error",
+      error: error.message || error,
+    });
+  }
 };
 
 // Update a todo by ID
 const updateTodoById = async (req, res) => {
-  const query = { _id: req?.params.id };
+  const id = req?.params.id;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid id format" });
+  }
 
-  await Todo.updateOne(
-    query,
-    {
-      $set: req?.body,
-    },
-    { new: true, runValidators: true }
-  )
-    .then(() => {
-      return res.status(200).json({
-        success: true,
-        message: "Todo updated successfully",
-      });
-    })
-    .catch((err) => {
-      return res.status(500).json({
-        success: false,
-        message: "There was a server-side error",
-        error: err.message || err,
-      });
+  try {
+    const query = { _id: id };
+
+    const result = await Todo.findByIdAndUpdate(
+      query,
+      {
+        $set: req?.body,
+      },
+      { new: true, runValidators: true, context: "query" }
+    );
+    return res.status(200).json({
+      success: true,
+      message: "Todo updated successfully",
+      data: result,
     });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "There was a server-side error",
+      error: error.message || error,
+    });
+  }
 };
 
 // Delete a todo by ID
 const deleteTodoById = async (req, res) => {
-  const query = { _id: req?.params.id };
+  const id = req?.params.id;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid id format" });
+  }
 
-  await Todo.deleteOne(query)
-    .then(() => {
-      return res.status(200).json({
-        success: true,
-        message: "Todo deleted successfully",
-      });
-    })
-    .catch((err) => {
-      return res.status(500).json({
+  try {
+    const query = { _id: id };
+    const result = await Todo.deleteOne(query);
+    console.log(result);
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({
         success: false,
-        message: "There was a server-side error",
-        error: err.message || err,
+        message: "Todo not found",
       });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Todo deleted successfully",
     });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "There was a server-side error",
+      error: error.message || error,
+    });
+  }
 };
 
 module.exports = {
