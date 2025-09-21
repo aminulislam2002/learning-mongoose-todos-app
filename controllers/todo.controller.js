@@ -47,8 +47,12 @@ const getTodoById = async (req, res) => {
 
 // Insert a new todo
 const newTodo = async (req, res) => {
+  const todo = req?.body;
+
   try {
-    const data = await new Todo(req.body).save();
+    const data = new Todo(todo);
+    await data.save();
+
     return res.status(201).json({
       success: true,
       message: "New todo created successfully",
@@ -108,7 +112,6 @@ const deleteTodoById = async (req, res) => {
   try {
     const query = { _id: id };
     const result = await Todo.deleteOne(query);
-    console.log(result);
 
     if (result.deletedCount === 0) {
       return res.status(404).json({
